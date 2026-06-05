@@ -30,12 +30,12 @@ export interface RegistrasiResponse {
 
 export const getKelasRegistrasi = async (
   page = 1,
-  kelasId?: number,
+  kodeKelas?: string,
 ): Promise<RegistrasiResponse> => {
   const res = await api.get("/mahasantri/registrasi", {
     params: {
       page,
-      ...(kelasId ? { kelas_id: kelasId } : {}),
+      ...(kodeKelas ? { kode_kelas: kodeKelas } : {}),
     },
   });
 

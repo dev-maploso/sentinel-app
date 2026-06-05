@@ -22,12 +22,12 @@ export default function KelasPage() {
 	const [lastPage, setLastPage] = useState(1);
 
 	const perPage = 20; // used for numbering; server page size unknown
-	const [selectedKelasId, setSelectedKelasId] = useState<number | null>(null);
+	const [selectedKelasKode, setSelectedKelasKode] = useState<string | null>(null);
 
-	const load = async (page: number, kelasId: number | null = null) => {
+	const load = async (page: number, kodeKelas: string | null = null) => {
 		try {
 			setLoading(true);
-			const res: RegistrasiResponse = await getKelasRegistrasi(page, kelasId ?? undefined);
+			const res: RegistrasiResponse = await getKelasRegistrasi(page, kodeKelas ?? undefined);
 			setData(res.data);
 			setCurrentPage(res.meta.current_page);
 			setLastPage(res.meta.last_page);
@@ -69,8 +69,8 @@ export default function KelasPage() {
 	};
 
 	useEffect(() => {
-		load(currentPage, selectedKelasId);
-	}, [currentPage, selectedKelasId]);
+		load(currentPage, selectedKelasKode);
+	}, [currentPage, selectedKelasKode]);
 
 	useEffect(() => {
 		loadAllClasses();
@@ -87,8 +87,8 @@ export default function KelasPage() {
 				<label className="text-sm font-medium">Filter Kelas:</label>
 				<select
 					className="rounded border px-3 py-2"
-					value={selectedKelasId ?? ""}
-					onChange={(e) => { setSelectedKelasId(e.target.value ? Number(e.target.value) : null); setCurrentPage(1); }}
+					value={selectedKelasKode ?? ""}
+					onChange={(e) => { setSelectedKelasKode(e.target.value ? e.target.value : null); setCurrentPage(1); }}
 				>
 					<option value="">Semua Kelas</option>
 					{(classes.length > 0
@@ -101,7 +101,7 @@ export default function KelasPage() {
 								).values(),
 							)
 						).map((k) => (
-						<option key={k.id} value={k.id}>
+						<option key={k.id} value={k.kode_kelas}>
 							{k.nama_kelas}
 						</option>
 					))}
@@ -110,7 +110,7 @@ export default function KelasPage() {
 
 			<Card className="overflow-hidden">
 				<KelasTable
-					data={selectedKelasId ? data.filter((d) => d.kelas?.id === selectedKelasId) : data}
+					data={data}
 					loading={loading}
 					rowNumberStart={(currentPage - 1) * perPage + 1}
 				/>
