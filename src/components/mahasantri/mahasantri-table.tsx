@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -45,6 +46,7 @@ export default function MahasantriTable({
   onDetail,
   rowNumberStart = 1,
 }: MahasantriTableProps) {
+  const router = useRouter();
   const [visibleColumns, setVisibleColumns] = useState<
     Record<ToggleKey, boolean>
   >(() =>
@@ -153,7 +155,10 @@ export default function MahasantriTable({
 
                 <TableCell className="text-right">
                   <button
-                    onClick={() => onDetail?.(item.id)}
+                    onClick={() => {
+                      if (onDetail) return onDetail(item.id);
+                      router.push(`/mahasantri/${item.id}`);
+                    }}
                     className="rounded-md border px-3 py-1 text-sm hover:bg-muted"
                   >
                     Detail
