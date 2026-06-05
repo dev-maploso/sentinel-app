@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 
@@ -14,11 +15,14 @@ import UserMenu from "./user-menu";
 export default function AppHeader() {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
-      {/* Mobile Menu */}
       <div className="flex items-center gap-3">
+        {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
-            <button className="rounded-lg p-2 hover:bg-muted md:hidden">
+            <button
+              type="button"
+              className="rounded-lg p-2 hover:bg-muted md:hidden"
+            >
               <Menu className="h-5 w-5" />
             </button>
           </SheetTrigger>
@@ -27,7 +31,12 @@ export default function AppHeader() {
             side="left"
             className="w-72 p-0"
           >
-            <AppSidebar />
+            <SheetTitle className="sr-only">
+              Navigation Menu
+            </SheetTitle>
+
+            {/* Sidebar versi mobile */}
+            <AppSidebar mobile />
           </SheetContent>
         </Sheet>
 
@@ -39,7 +48,7 @@ export default function AppHeader() {
         </div>
       </div>
 
-      {/* Right */}
+      {/* Right Section */}
       <div className="flex items-center gap-3">
         <UserMenu />
       </div>

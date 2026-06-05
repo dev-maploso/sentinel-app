@@ -26,11 +26,23 @@ const menus = [
   },
 ];
 
-export default function AppSidebar() {
+type AppSidebarProps = {
+  mobile?: boolean;
+};
+
+export default function AppSidebar({
+  mobile = false,
+}: AppSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-background md:flex md:flex-col">
+    <aside
+      className={
+        mobile
+          ? "flex h-full flex-col bg-background"
+          : "hidden w-64 shrink-0 border-r bg-background md:flex md:flex-col"
+      }
+    >
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
         <h1 className="text-lg font-bold">
@@ -45,8 +57,10 @@ export default function AppSidebar() {
             const Icon = menu.icon;
 
             const active =
-              pathname === menu.href ||
-              pathname.startsWith(`${menu.href}/`);
+              menu.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname === menu.href ||
+                  pathname.startsWith(`${menu.href}/`);
 
             return (
               <li key={menu.href}>
@@ -58,7 +72,7 @@ export default function AppSidebar() {
                       : "hover:bg-muted"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4 shrink-0" />
                   <span>{menu.title}</span>
                 </Link>
               </li>
