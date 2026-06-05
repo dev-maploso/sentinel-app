@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Users,
-  Loader2,
-  Eye,
-} from "lucide-react";
+import { Users, Loader2, Eye } from "lucide-react";
 
 import {
   Table,
@@ -59,14 +55,10 @@ export default function MahasantriTable({
   const router = useRouter();
 
   const [visibleColumns, setVisibleColumns] =
-    useState<Record<ToggleKey, boolean>>(
-      () =>
-        Object.fromEntries(
-          extraColumns.map((column) => [
-            column.key,
-            false,
-          ]),
-        ) as Record<ToggleKey, boolean>,
+    useState<Record<ToggleKey, boolean>>(() =>
+      Object.fromEntries(
+        extraColumns.map((column) => [column.key, false])
+      ) as Record<ToggleKey, boolean>
     );
 
   const toggleColumn = (key: ToggleKey) => {
@@ -112,47 +104,16 @@ export default function MahasantriTable({
 
   return (
     <div className="space-y-5">
-      {/* Column Filter */}
-      <div className="rounded-3xl border bg-white p-6 shadow-sm">
-        <div className="mb-4">
-          <h3 className="font-semibold text-zinc-900">
-            Kolom Tambahan
-          </h3>
-
-          <p className="text-sm text-zinc-500">
-            Pilih informasi yang ingin ditampilkan.
-          </p>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {extraColumns.map((column) => (
-            <label
-              key={column.key}
-              className="flex cursor-pointer items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 transition hover:border-emerald-300 hover:bg-emerald-50"
-            >
-              <input
-                type="checkbox"
-                checked={visibleColumns[column.key]}
-                onChange={() =>
-                  toggleColumn(column.key)
-                }
-                className="h-4 w-4 accent-emerald-600"
-              />
-
-              <span className="text-sm font-medium">
-                {column.label}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Table */}
+      {/* TABLE */}
       <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-emerald-50">
               <TableRow>
+                <TableHead className="w-24">
+                  Aksi
+                </TableHead>
+
                 <TableHead className="w-20">
                   No
                 </TableHead>
@@ -167,13 +128,9 @@ export default function MahasantriTable({
 
                 <TableHead>Kamar</TableHead>
 
-                <TableHead>
-                  Tempat Lahir
-                </TableHead>
+                <TableHead>Tempat Lahir</TableHead>
 
-                <TableHead>
-                  Tanggal Lahir
-                </TableHead>
+                <TableHead>Tanggal Lahir</TableHead>
 
                 {extraColumns.map(
                   (column) =>
@@ -181,12 +138,8 @@ export default function MahasantriTable({
                       <TableHead key={column.key}>
                         {column.label}
                       </TableHead>
-                    ),
+                    )
                 )}
-
-                <TableHead className="text-right">
-                  Aksi
-                </TableHead>
               </TableRow>
             </TableHeader>
 
@@ -196,11 +149,28 @@ export default function MahasantriTable({
                   key={item.id}
                   className="transition-colors hover:bg-emerald-50/50"
                 >
+                  {/* ACTION FIRST */}
+                  <TableCell>
+                    <button
+                      onClick={() => {
+                        if (onDetail) {
+                          return onDetail(item.id);
+                        }
+
+                        router.push(`/mahasantri/${item.id}`);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700"
+                    >
+                      <Eye className="h-4 w-4" />
+                      Detail
+                    </button>
+                  </TableCell>
+
                   <TableCell className="font-medium text-zinc-500">
                     {rowNumberStart + index}
                   </TableCell>
 
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium text-zinc-900">
                     {item.nim}
                   </TableCell>
 
@@ -233,34 +203,46 @@ export default function MahasantriTable({
                   {extraColumns.map((column) =>
                     visibleColumns[column.key] ? (
                       <TableCell key={column.key}>
-                        {String(
-                          item[column.key] ?? "-",
-                        )}
+                        {String(item[column.key] ?? "-")}
                       </TableCell>
-                    ) : null,
+                    ) : null
                   )}
-
-                  <TableCell className="text-right">
-                    <button
-                      onClick={() => {
-                        if (onDetail) {
-                          return onDetail(item.id);
-                        }
-
-                        router.push(
-                          `/mahasantri/${item.id}`,
-                        );
-                      }}
-                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
-                    >
-                      <Eye className="h-4 w-4" />
-                      Detail
-                    </button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+        </div>
+      </div>
+
+      {/* COLUMN TOGGLE (MOVED BELOW TABLE) */}
+      <div className="rounded-3xl border bg-white p-6 shadow-sm">
+        <div className="mb-4">
+          <h3 className="font-semibold text-zinc-900">
+            Kolom Tambahan
+          </h3>
+          <p className="text-sm text-zinc-500">
+            Pilih informasi tambahan yang ingin ditampilkan di tabel.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {extraColumns.map((column) => (
+            <label
+              key={column.key}
+              className="flex cursor-pointer items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 transition hover:border-emerald-300 hover:bg-emerald-50"
+            >
+              <input
+                type="checkbox"
+                checked={visibleColumns[column.key]}
+                onChange={() => toggleColumn(column.key)}
+                className="h-4 w-4 accent-emerald-600"
+              />
+
+              <span className="text-sm font-medium text-zinc-800">
+                {column.label}
+              </span>
+            </label>
+          ))}
         </div>
       </div>
     </div>
