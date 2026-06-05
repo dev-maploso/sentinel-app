@@ -16,6 +16,7 @@ export default function KelasPage() {
 	const [lastPage, setLastPage] = useState(1);
 
 	const perPage = 20; // used for numbering; server page size unknown
+	const [selectedKelasId, setSelectedKelasId] = useState<number | null>(null);
 
 	const load = async (page: number) => {
 		try {
@@ -42,8 +43,34 @@ export default function KelasPage() {
 				<p className="text-muted-foreground">Daftar registrasi mahasantri per kelas.</p>
 			</div>
 
+			<div className="flex items-center gap-4">
+				<label className="text-sm font-medium">Filter Kelas:</label>
+				<select
+					className="rounded border px-3 py-2"
+					value={selectedKelasId ?? ""}
+					onChange={(e) => setSelectedKelasId(e.target.value ? Number(e.target.value) : null)}
+				>
+					<option value="">Semua Kelas</option>
+					{Array.from(
+						new Map(
+							data
+								.filter((d) => d.kelas)
+								.map((d) => [d.kelas!.id, d.kelas!]),
+						).values(),
+					).map((k) => (
+						<option key={k.id} value={k.id}>
+							{k.nama_kelas}
+						</option>
+					))}
+				</select>
+			</div>
+
 			<Card className="overflow-hidden">
-				<KelasTable data={data} loading={loading} rowNumberStart={(currentPage - 1) * perPage + 1} />
+				<KelasTable
+					data={selectedKelasId ? data.filter((d) => d.kelas?.id === selectedKelasId) : data}
+					loading={loading}
+					rowNumberStart={(currentPage - 1) * perPage + 1}
+				/>
 			</Card>
 
 			<div className="flex items-center justify-between">
