@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -36,13 +36,30 @@ interface MahasantriTableProps {
   data: Mahasantri[];
   loading?: boolean;
   onDetail?: (id: number) => void;
+  rowNumberStart?: number;
 }
 
 export default function MahasantriTable({
   data,
   loading = false,
   onDetail,
+  rowNumberStart = 1,
 }: MahasantriTableProps) {
+  const [visibleColumns, setVisibleColumns] = useState<
+    Record<ToggleKey, boolean>
+  >(() =>
+    Object.fromEntries(
+      extraColumns.map((column) => [column.key, false]),
+    ) as Record<ToggleKey, boolean>,
+  );
+
+  const toggleColumn = (key: ToggleKey) => {
+    setVisibleColumns((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
   if (loading) {
     return (
       <div className="rounded-lg border p-8 text-center">
@@ -60,72 +77,93 @@ export default function MahasantriTable({
   }
 
   return (
-    <div className="rounded-lg border overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[80px]">ID</TableHead>
-            <TableHead>NIM</TableHead>
-            <TableHead>Nama</TableHead>
-            <TableHead>Pondok</TableHead>
-            <TableHead>Komplek</TableHead>
-            <TableHead>Kamar</TableHead>
-            <TableHead>Tempat Lahir</TableHead>
-            <TableHead>Tanggal Lahir</TableHead>
-            <TableHead>Nama Ayah</TableHead>
-            <TableHead>Nama Ibu</TableHead>
-            <TableHead>No. WA Orang Tua</TableHead>
-            <TableHead className="text-right">Aksi</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {data.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.id}</TableCell>
-
-              <TableCell className="font-medium">
-                {item.nim}
-              </TableCell>
-
-              <TableCell>{item.name}</TableCell>
-
-              <TableCell>{item.pondok?.nama_pondok || "-"}</TableCell>
-              <TableCell>{item.komplek?.nama_komplek || "-"}</TableCell>
-              <TableCell>{item.kamar?.nama_kamar || "-"}</TableCell>
-
-              <TableCell>
-                {item.tempat_lahir || "-"}
-              </TableCell>
-
-              <TableCell>
-                {item.tanggal_lahir || "-"}
-              </TableCell>
-
-              <TableCell>
-                {item.nama_ayah || "-"}
-              </TableCell>
-
-              <TableCell>
-                {item.nama_ibu || "-"}
-              </TableCell>
-
-              <TableCell>
-                {item.no_wa_orang_tua || "-"}
-              </TableCell>
-
-              <TableCell className="text-right">
-                <button
-                  onClick={() => onDetail?.(item.id)}
-                  className="rounded-md border px-3 py-1 text-sm hover:bg-muted"
-                >
-                  Detail
-                </button>
-              </TableCell>
-            </TableRow>
+    <div className="space-y-4">
+      <div className="rounded-lg border bg-white p-4 shadow-sm">
+        <div className="mb-3 text-sm font-semibold">Pilih kolom tambahan</div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {extraColumns.map((column) => (
+            <label
+              key={column.key}
+              className="inline-flex items-center gap-2 text-sm"
+            >
+              <input
+                type="checkbox"
+                checked={visibleColumns[column.key]}
+                onChange={() => toggleColumn(column.key)}
+                className="h-4 w-4 rounded border"
+              />
+              <span>{column.label}</span>
+            </label>
           ))}
-        </TableBody>
-      </Table>
+        </div>
+      </div>
+
+      <div className="rounded-lg border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-20">No</TableHead>
+              <TableHead>NIM</TableHead>
+              <TableHead>Nama</TableHead>
+              <TableHead>Pondok</TableHead>
+              <TableHead>Komplek</TableHead>
+              <TableHead>Kamar</TableHead>
+              <TableHead>Tempat Lahir</TableHead>
+              <TableHead>Tanggal Lahir</TableHead>
+              <TableHead>No. WA Orang Tua</TableHead>
+              {extraColumns.map(
+                (column) =>
+                  visibleColumns[column.key] && (
+                    <TableHead key={column.key}>{column.label}</TableHead>
+                  ),
+              )}
+              <TableHead className="text-right">Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {data.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell>{rowNumberStart + index}</TableCell>
+
+                <TableCell className="font-medium">
+                  {item.nim}
+                </TableCell>
+
+                <TableCell>{item.name}</TableCell>
+
+                <TableCell>{item.pondok?.nama_pondok || "-"}</TableCell>
+                <TableCell>{item.komplek?.nama_komplek || "-"}</TableCell>
+                <TableCell>{item.kamar?.nama_kamar || "-"}</TableCell>
+
+                <TableCell>{item.tempat_lahir || "-"}</TableCell>
+
+                <TableCell>{item.tanggal_lahir || "-"}</TableCell>
+
+                <TableCell>{item.no_wa_orang_tua || "-"}</TableCell>
+
+                {extraColumns.map(
+                  (column) =>
+                    visibleColumns[column.key] ? (
+                      <TableCell key={column.key}>
+                        {String(item[column.key] ?? "-")}
+                      </TableCell>
+                    ) : null,
+                )}
+
+                <TableCell className="text-right">
+                  <button
+                    onClick={() => onDetail?.(item.id)}
+                    className="rounded-md border px-3 py-1 text-sm hover:bg-muted"
+                  >
+                    Detail
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
