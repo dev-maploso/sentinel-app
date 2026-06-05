@@ -33,8 +33,8 @@ export default function KelasPage() {
 	};
 
 	useEffect(() => {
-		load(1);
-	}, []);
+		load(currentPage);
+	}, [currentPage]);
 
 	return (
 		<div className="space-y-6">
