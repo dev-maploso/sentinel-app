@@ -55,29 +55,29 @@ export default function LoginPage() {
 
           <div className="relative z-10 flex flex-col justify-between p-12 text-white">
             <div>
-  <div className="flex items-center gap-4">
-    <div className="flex items-center justify-center rounded-2xl bg-white/10 p-2 backdrop-blur-sm">
-      <Image
-        src="/logo.png"
-        alt="Sentinel Logo"
-        width={80}
-        height={80}
-        priority
-        className="h-20 w-20 object-contain"
-      />
-    </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center rounded-2xl bg-white/10 p-2 backdrop-blur-sm">
+                  <Image
+                    src="/logo.png"
+                    alt="Sentinel Logo"
+                    width={80}
+                    height={80}
+                    priority
+                    className="h-20 w-20 object-contain"
+                  />
+                </div>
 
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">
-        SENTINEL
-      </h1>
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">
+                    SENTINEL
+                  </h1>
 
-      <p className="text-sm text-emerald-100">
-        Sistem Informasi Mahasantri
-      </p>
-    </div>
-  </div>
-</div>
+                  <p className="text-sm text-emerald-100">
+                     Sentral Data Mah&apos;ad Aly<span className="italic">ne</span> Ploso
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="max-w-lg">
               <h2 className="mb-4 text-5xl font-bold leading-tight">
@@ -85,8 +85,8 @@ export default function LoginPage() {
               </h2>
 
               <p className="text-lg text-emerald-100 leading-relaxed">
-                Platform modern untuk memantau mahasantri, kelas, akademik, dan
-                administrasi pondok secara terintegrasi.
+                Platform modern untuk memantau mahasantri Ma&apos;had Aly Al
+                Falah Ploso
               </p>
             </div>
 
@@ -123,7 +123,7 @@ export default function LoginPage() {
                 <h1 className="text-3xl font-bold tracking-tight">SENTINEL</h1>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Sistem Informasi Mahasantri
+                   Sentral Data Mah&apos;ad Aly<span className="italic">ne</span> Ploso
                 </p>
               </div>
 
