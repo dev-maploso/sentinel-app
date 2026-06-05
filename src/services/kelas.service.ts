@@ -30,9 +30,13 @@ export interface RegistrasiResponse {
 
 export const getKelasRegistrasi = async (
   page = 1,
+  kelasId?: number,
 ): Promise<RegistrasiResponse> => {
   const res = await api.get("/mahasantri/registrasi", {
-    params: { page },
+    params: {
+      page,
+      ...(kelasId ? { kelas_id: kelasId } : {}),
+    },
   });
 
   return res.data;

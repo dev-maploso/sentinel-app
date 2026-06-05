@@ -6,11 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import KelasTable from "@/components/kelas/kelas-table";
 
-import { getKelasRegistrasi, RegistrasiResponse, RegistrasiItem } from "@/services/kelas.service";
+import {
+	getKelasRegistrasi,
+	Kelas,
+	RegistrasiResponse,
+	RegistrasiItem,
+} from "@/services/kelas.service";
 
 export default function KelasPage() {
 	const [data, setData] = useState<RegistrasiItem[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [classes, setClasses] = useState<Kelas[]>([]);
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const [lastPage, setLastPage] = useState(1);
@@ -18,10 +24,10 @@ export default function KelasPage() {
 	const perPage = 20; // used for numbering; server page size unknown
 	const [selectedKelasId, setSelectedKelasId] = useState<number | null>(null);
 
-	const load = async (page: number) => {
+	const load = async (page: number, kelasId: number | null = null) => {
 		try {
 			setLoading(true);
-			const res: RegistrasiResponse = await getKelasRegistrasi(page);
+			const res: RegistrasiResponse = await getKelasRegistrasi(page, kelasId ?? undefined);
 			setData(res.data);
 			setCurrentPage(res.meta.current_page);
 			setLastPage(res.meta.last_page);
@@ -32,9 +38,43 @@ export default function KelasPage() {
 		}
 	};
 
+	const loadAllClasses = async () => {
+		try {
+			const firstPage = await getKelasRegistrasi(1);
+			const kelasMap = new Map<number, Kelas>();
+
+			firstPage.data.forEach((item) => {
+				if (item.kelas) {
+					kelasMap.set(item.kelas.id, item.kelas);
+				}
+			});
+
+			if (firstPage.meta.last_page > 1) {
+				const otherPages = Array.from({ length: firstPage.meta.last_page - 1 }, (_, index) => index + 2);
+				const results = await Promise.all(otherPages.map((page) => getKelasRegistrasi(page)));
+
+				results.forEach((pageResult) => {
+					pageResult.data.forEach((item) => {
+						if (item.kelas) {
+							kelasMap.set(item.kelas.id, item.kelas);
+						}
+					});
+				});
+			}
+
+			setClasses(Array.from(kelasMap.values()));
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
 	useEffect(() => {
-		load(currentPage);
-	}, [currentPage]);
+		load(currentPage, selectedKelasId);
+	}, [currentPage, selectedKelasId]);
+
+	useEffect(() => {
+		loadAllClasses();
+	}, []);
 
 	return (
 		<div className="space-y-6">
@@ -48,16 +88,19 @@ export default function KelasPage() {
 				<select
 					className="rounded border px-3 py-2"
 					value={selectedKelasId ?? ""}
-					onChange={(e) => setSelectedKelasId(e.target.value ? Number(e.target.value) : null)}
+					onChange={(e) => { setSelectedKelasId(e.target.value ? Number(e.target.value) : null); setCurrentPage(1); }}
 				>
 					<option value="">Semua Kelas</option>
-					{Array.from(
-						new Map(
-							data
-								.filter((d) => d.kelas)
-								.map((d) => [d.kelas!.id, d.kelas!]),
-						).values(),
-					).map((k) => (
+					{(classes.length > 0
+						? classes
+						: Array.from(
+							new Map(
+								data
+									.filter((d) => d.kelas)
+									.map((d) => [d.kelas!.id, d.kelas!]),
+								).values(),
+							)
+						).map((k) => (
 						<option key={k.id} value={k.id}>
 							{k.nama_kelas}
 						</option>
