@@ -1,11 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  GraduationCap,
   LayoutDashboard,
   Users,
-  GraduationCap,
 } from "lucide-react";
 
 const menus = [
@@ -39,20 +40,41 @@ export default function AppSidebar({
     <aside
       className={
         mobile
-          ? "flex h-full flex-col bg-background"
-          : "hidden w-64 shrink-0 border-r bg-background md:flex md:flex-col"
+          ? "flex h-full w-full flex-col bg-white"
+          : "hidden w-72 shrink-0 border-r border-zinc-200 bg-white md:flex md:flex-col"
       }
     >
-      {/* Logo */}
-      <div className="flex h-16 items-center border-b px-6">
-        <h1 className="text-lg font-bold">
-          Sentinel
-        </h1>
+      {/* Header */}
+      <div className="border-b border-zinc-100 px-6 py-5">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo.png"
+            alt="Sentinel"
+            width={48}
+            height={48}
+            priority
+            className="h-12 w-12 object-contain"
+          />
+
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-zinc-900">
+              SENTINEL
+            </h1>
+
+            <p className="text-xs text-emerald-600">
+              Sistem Informasi Mahasantri
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1 p-4">
-        <ul className="space-y-1">
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          Main Menu
+        </p>
+
+        <ul className="space-y-1.5">
           {menus.map((menu) => {
             const Icon = menu.icon;
 
@@ -66,26 +88,43 @@ export default function AppSidebar({
               <li key={menu.href}>
                 <Link
                   href={menu.href}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
+                  className={`group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     active
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
+                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-100"
+                      : "text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700"
                   }`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
+                  <Icon
+                    className={`h-5 w-5 shrink-0 ${
+                      active
+                        ? "text-white"
+                        : "text-zinc-400 group-hover:text-emerald-600"
+                    }`}
+                  />
+
                   <span>{menu.title}</span>
                 </Link>
               </li>
             );
           })}
         </ul>
-      </nav>
+      </div>
 
       {/* Footer */}
-      <div className="border-t p-4">
-        <p className="text-xs text-muted-foreground">
-          Sentinel v1.0
-        </p>
+      <div className="border-t border-zinc-100 p-4">
+        <div className="rounded-2xl bg-emerald-50 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-emerald-700">
+                Sentinel
+              </p>
+
+              <p className="text-xs text-emerald-600">
+                Version 1.0.0
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   );

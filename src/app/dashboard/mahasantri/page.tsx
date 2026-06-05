@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import MahasantriSearch from "@/components/mahasantri/mahasantri-search";
 import MahasantriTable from "@/components/mahasantri/mahasantri-table";
 
@@ -16,8 +15,10 @@ import {
 
 export default function MahasantriPage() {
   const router = useRouter();
+
   const [data, setData] = useState<Mahasantri[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
 
@@ -57,47 +58,70 @@ export default function MahasantriPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">
-          Data Mahasantri
+      {/* HEADER */}
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+          Mahasantri
         </h1>
 
-        <p className="text-muted-foreground">
-          Daftar seluruh mahasantri.
+        <p className="text-sm text-zinc-500">
+          Kelola data seluruh mahasantri pondok pesantren.
         </p>
+
+        <div className="text-sm text-emerald-600 font-medium">
+          Total data: {data.length}
+        </div>
       </div>
 
+      {/* SEARCH */}
       <MahasantriSearch
         value={searchTerm}
         onChange={setSearchTerm}
       />
 
-      <Card className="overflow-hidden">
-        <MahasantriTable
-          data={data}
-          loading={loading}
-          rowNumberStart={1}
-          onDetail={(id) => router.push(`/dashboard/mahasantri/${id}`)}
-        />
-      </Card>
+      {/* TABLE (NO CARD WRAPPER) */}
+      <MahasantriTable
+        data={data}
+        loading={loading}
+        rowNumberStart={(currentPage - 1) * 10 + 1}
+        onDetail={(id) =>
+          router.push(`/dashboard/mahasantri/${id}`)
+        }
+      />
 
-      <div className="flex items-center justify-between">
+      {/* PAGINATION */}
+      <div className="flex items-center justify-between pt-2">
         <Button
           variant="outline"
-          disabled={currentPage <= 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
+          className="rounded-xl"
+          disabled={currentPage <= 1 || loading}
+          onClick={() =>
+            setCurrentPage((prev) => prev - 1)
+          }
         >
           Previous
         </Button>
 
-        <div className="text-sm text-muted-foreground">
-          Halaman {currentPage} dari {lastPage}
+        <div className="text-sm text-zinc-500">
+          Halaman{" "}
+          <span className="font-medium text-zinc-900">
+            {currentPage}
+          </span>{" "}
+          dari{" "}
+          <span className="font-medium text-zinc-900">
+            {lastPage}
+          </span>
         </div>
 
         <Button
           variant="outline"
-          disabled={currentPage >= lastPage}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
+          className="rounded-xl"
+          disabled={
+            currentPage >= lastPage || loading
+          }
+          onClick={() =>
+            setCurrentPage((prev) => prev + 1)
+          }
         >
           Next
         </Button>
