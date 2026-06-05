@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import MahasantriTable from "@/components/mahasantri/mahasantri-table";
 import { searchMahasantri, Mahasantri } from "@/services/mahasantri.service";
 import { useRouter } from "next/navigation";
 
@@ -87,31 +88,11 @@ export default function MahasantriPage() {
           className="w-full max-w-md px-4 py-2 border rounded-lg"
         />
 
-        <div className="overflow-x-auto border rounded-lg">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-100 dark:bg-zinc-800">
-              <tr>
-                <th className="px-4 py-2 text-left">NIM</th>
-                <th className="px-4 py-2 text-left">Nama</th>
-                <th className="px-4 py-2 text-left">Kamar</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data.map((item) => (
-                <tr
-                  key={item.id}
-                  onClick={() => router.push(`/mahasantri/${item.id}`)}
-                  className="border-t cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                >
-                  <td className="px-4 py-2">{item.nim}</td>
-                  <td className="px-4 py-2">{item.name}</td>
-                  <td className="px-4 py-2">{item.kamar || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <MahasantriTable
+          data={data}
+          loading={loading}
+          onDetail={(id) => router.push(`/mahasantri/${id}`)}
+        />
 
         {/* 👇 trigger infinite scroll */}
         <div
