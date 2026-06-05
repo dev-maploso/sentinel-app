@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import KelasSearch from "@/components/kelas/kelas-search";
 import KelasTable from "@/components/kelas/kelas-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -23,6 +24,7 @@ export default function KelasPage() {
 
   const perPage = 20;
   const [selectedKelasKode, setSelectedKelasKode] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const load = async (page: number, kodeKelas: string | null = null) => {
     try {
@@ -86,6 +88,19 @@ export default function KelasPage() {
     loadAllClasses();
   }, []);
 
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return data;
+    }
+
+    const query = searchTerm.toLowerCase();
+
+    return data.filter((item) =>
+      item.name.toLowerCase().includes(query) ||
+      item.nim.toLowerCase().includes(query)
+    );
+  }, [data, searchTerm]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -97,6 +112,11 @@ export default function KelasPage() {
           Daftar registrasi mahasantri per kelas
         </p>
       </div>
+
+      <KelasSearch
+        value={searchTerm}
+        onChange={setSearchTerm}
+      />
 
       {/* Filter Card */}
       <Card className="rounded-3xl border bg-white p-5 shadow-sm">
@@ -141,7 +161,7 @@ export default function KelasPage() {
       {/* Table */}
       <Card className="overflow-hidden rounded-3xl border bg-white shadow-sm">
         <KelasTable
-          data={data}
+          data={filteredData}
           loading={loading}
           rowNumberStart={(currentPage - 1) * perPage + 1}
         />
