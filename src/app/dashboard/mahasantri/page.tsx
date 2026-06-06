@@ -12,6 +12,7 @@ import {
   Mahasantri,
   getMahasantriList,
   searchMahasantri,
+  getAllMahasantri,
 } from "@/services/mahasantri.service";
 import { exportMahasantriToExcel } from "@/lib/export";
 
@@ -62,8 +63,10 @@ export default function MahasantriPage() {
   const handleExport = async () => {
     try {
       setExportLoading(true);
+      // Fetch semua data mahasantri
+      const allData = await getAllMahasantri();
       const timestamp = new Date().toISOString().split('T')[0];
-      exportMahasantriToExcel(data, undefined, `mahasantri-${timestamp}.xlsx`);
+      exportMahasantriToExcel(allData, undefined, `mahasantri-${timestamp}.xlsx`);
     } catch (error) {
       console.error('Export failed:', error);
     } finally {
@@ -89,7 +92,7 @@ export default function MahasantriPage() {
           </div>
           <Button
             onClick={handleExport}
-            disabled={data.length === 0 || exportLoading}
+            disabled={exportLoading}
             className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
           >
             {exportLoading ? (

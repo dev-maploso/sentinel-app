@@ -125,6 +125,24 @@ export const searchMahasantri = async (
   return res.data;
 };
 
+export const getAllMahasantri = async (): Promise<Mahasantri[]> => {
+  let allData: Mahasantri[] = [];
+  let currentPage = 1;
+  let lastPage = 1;
+
+  while (currentPage <= lastPage) {
+    const res = await api.get("/mahasantri", {
+      params: { page: currentPage },
+    });
+
+    allData = [...allData, ...res.data.data];
+    lastPage = res.data.meta.last_page;
+    currentPage++;
+  }
+
+  return allData;
+};
+
 export const getMahasantri = async (
   id: string
 ): Promise<Mahasantri> => {
