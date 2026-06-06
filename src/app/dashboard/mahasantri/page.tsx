@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Download, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import MahasantriSearch from "@/components/mahasantri/mahasantri-search";
@@ -12,12 +13,14 @@ import {
   getMahasantriList,
   searchMahasantri,
 } from "@/services/mahasantri.service";
+import { exportMahasantriToExcel } from "@/lib/export";
 
 export default function MahasantriPage() {
   const router = useRouter();
 
   const [data, setData] = useState<Mahasantri[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
@@ -56,6 +59,18 @@ export default function MahasantriPage() {
     return () => clearTimeout(delay);
   }, [searchTerm]);
 
+  const handleExport = async () => {
+    try {
+      setExportLoading(true);
+      const timestamp = new Date().toISOString().split('T')[0];
+      exportMahasantriToExcel(data, undefined, `mahasantri-${timestamp}.xlsx`);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -68,8 +83,27 @@ export default function MahasantriPage() {
           Kelola data seluruh mahasantri pondok pesantren.
         </p>
 
-        <div className="text-sm text-emerald-600 font-medium">
-          Total data: {data.length}
+        <div className="flex items-center justify-between gap-4 pt-2">
+          <div className="text-sm text-emerald-600 font-medium">
+            Total data: {data.length}
+          </div>
+          <Button
+            onClick={handleExport}
+            disabled={data.length === 0 || exportLoading}
+            className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+          >
+            {exportLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Mengexport...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export ke Excel
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
