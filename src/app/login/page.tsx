@@ -73,7 +73,7 @@ export default function LoginPage() {
                   </h1>
 
                   <p className="text-sm text-emerald-100">
-                     Sentral Data Mah&apos;ad Aly<span className="italic">ne</span> Ploso
+                     Sentral Data Ma&apos;had Aly<span className="italic">ne</span> Ploso
                   </p>
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default function LoginPage() {
                 <h1 className="text-3xl font-bold tracking-tight">SENTINEL</h1>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                   Sentral Data Mah&apos;ad Aly<span className="italic">ne</span> Ploso
+                   Sentral Data Ma&apos;had Aly<span className="italic">ne</span> Ploso
                 </p>
               </div>
 
