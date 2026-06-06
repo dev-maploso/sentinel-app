@@ -25,6 +25,7 @@ export default function KelasPage() {
   const perPage = 20;
   const [selectedKelasKode, setSelectedKelasKode] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [allData, setAllData] = useState<RegistrasiItem[]>([]);
 
   const load = async (page: number, kodeKelas: string | null = null) => {
     try {
@@ -48,6 +49,7 @@ export default function KelasPage() {
     try {
       const firstPage = await getKelasRegistrasi(1);
       const kelasMap = new Map<number, Kelas>();
+      const registrations: RegistrasiItem[] = [...firstPage.data];
 
       firstPage.data.forEach((item) => {
         if (item.kelas) {
@@ -70,11 +72,14 @@ export default function KelasPage() {
             if (item.kelas) {
               kelasMap.set(item.kelas.id, item.kelas);
             }
+
+            registrations.push(item);
           });
         });
       }
 
       setClasses(Array.from(kelasMap.values()));
+      setAllData(registrations);
     } catch (err) {
       console.error(err);
     }
@@ -88,18 +93,53 @@ export default function KelasPage() {
     loadAllClasses();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedKelasKode]);
+
   const filteredData = useMemo(() => {
     if (!searchTerm.trim()) {
       return data;
     }
 
     const query = searchTerm.toLowerCase();
+    const source = allData.length ? allData : data;
 
-    return data.filter((item) =>
-      item.name.toLowerCase().includes(query) ||
-      item.nim.toLowerCase().includes(query)
-    );
-  }, [data, searchTerm]);
+    return source.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(query) ||
+        item.nim.toLowerCase().includes(query);
+
+      const matchesClass = selectedKelasKode
+        ? item.kelas?.kode_kelas === selectedKelasKode
+        : true;
+
+      return matchesSearch && matchesClass;
+    });
+  }, [data, allData, searchTerm, selectedKelasKode]);
+
+  const displayLastPage = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return lastPage;
+    }
+
+    return Math.max(1, Math.ceil(filteredData.length / perPage));
+  }, [filteredData.length, lastPage, perPage, searchTerm]);
+
+  useEffect(() => {
+    if (currentPage > displayLastPage) {
+      setCurrentPage(displayLastPage);
+    }
+  }, [currentPage, displayLastPage]);
+
+  const displayData = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return data;
+    }
+
+    const startIndex = (currentPage - 1) * perPage;
+    return filteredData.slice(startIndex, startIndex + perPage);
+  }, [data, filteredData, currentPage, perPage, searchTerm]);
 
   return (
     <div className="space-y-6">
@@ -161,7 +201,7 @@ export default function KelasPage() {
       {/* Table */}
       <Card className="overflow-hidden rounded-3xl border bg-white shadow-sm">
         <KelasTable
-          data={filteredData}
+          data={displayData}
           loading={loading}
           rowNumberStart={(currentPage - 1) * perPage + 1}
         />
@@ -186,14 +226,14 @@ export default function KelasPage() {
           <span className="font-semibold text-zinc-900">
             {currentPage}
           </span>{" "}
-          dari {lastPage}
+          dari {displayLastPage}
         </div>
 
         <Button
           variant="outline"
-          disabled={currentPage >= lastPage}
+          disabled={currentPage >= displayLastPage}
           onClick={() =>
-            setCurrentPage((p) => Math.min(lastPage, p + 1))
+            setCurrentPage((p) => Math.min(displayLastPage, p + 1))
           }
           className="rounded-2xl"
         >
