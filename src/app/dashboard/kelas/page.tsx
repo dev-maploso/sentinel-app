@@ -106,9 +106,12 @@ export default function KelasPage() {
     const source = allData.length ? allData : data;
 
     return source.filter((item) => {
+      const name = item.name ? item.name.toLowerCase() : "";
+      const nim = item.nim ? item.nim.toLowerCase() : "";
+
       const matchesSearch =
-        item.name.toLowerCase().includes(query) ||
-        item.nim.toLowerCase().includes(query);
+        name.includes(query) ||
+        nim.includes(query);
 
       const matchesClass = selectedKelasKode
         ? item.kelas?.kode_kelas === selectedKelasKode

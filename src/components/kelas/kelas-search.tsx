@@ -11,7 +11,7 @@ interface SearchKelasProps {
 export default function SearchKelas({
   value,
   onChange,
-  placeholder = "Cari nama atau NIM mahasantri...",
+  placeholder = "Cari nama mahasantri...",
 }: SearchKelasProps) {
   return (
     <div className="rounded-3xl border bg-white p-5 shadow-sm">
