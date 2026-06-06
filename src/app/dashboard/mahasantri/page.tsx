@@ -13,6 +13,7 @@ import {
   getMahasantriList,
   searchMahasantri,
   getAllMahasantri,
+  getTotalMahasantri,
 } from "@/services/mahasantri.service";
 import { exportMahasantriToExcel } from "@/lib/export";
 
@@ -22,6 +23,7 @@ export default function MahasantriPage() {
   const [data, setData] = useState<Mahasantri[]>([]);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+  const [totalData, setTotalData] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [query, setQuery] = useState("");
@@ -46,6 +48,20 @@ export default function MahasantriPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Fetch total data mahasantri once on mount
+    const fetchTotal = async () => {
+      try {
+        const total = await getTotalMahasantri();
+        setTotalData(total);
+      } catch (error) {
+        console.error('Failed to fetch total:', error);
+      }
+    };
+
+    fetchTotal();
+  }, []);
 
   useEffect(() => {
     loadData(currentPage, query);
@@ -88,7 +104,7 @@ export default function MahasantriPage() {
 
         <div className="flex items-center justify-between gap-4 pt-2">
           <div className="text-sm text-emerald-600 font-medium">
-            Total data: {data.length}
+            Total data: {totalData}
           </div>
           <Button
             onClick={handleExport}

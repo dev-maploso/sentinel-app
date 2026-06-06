@@ -143,6 +143,21 @@ export const getAllMahasantri = async (): Promise<Mahasantri[]> => {
   return allData;
 };
 
+export const getTotalMahasantri = async (): Promise<number> => {
+  const res = await fetch("/api/mahasantri/total", {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch total mahasantri");
+  }
+
+  const data = await res.json();
+  return data.total;
+};
+
 export const getMahasantri = async (
   id: string
 ): Promise<Mahasantri> => {
