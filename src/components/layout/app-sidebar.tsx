@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  CalendarCheck,
   GraduationCap,
   LayoutDashboard,
   Users,
@@ -24,6 +25,11 @@ const menus = [
     title: "Kelas",
     href: "/dashboard/kelas",
     icon: GraduationCap,
+  },
+  {
+    title: "Izin Keluar",
+    href: "/dashboard/izin_pulang",
+    icon: CalendarCheck,
   },
 ];
 
@@ -120,7 +126,7 @@ export default function AppSidebar({
               </p>
 
               <p className="text-xs text-emerald-600">
-                Version 1.0.0
+                Version 1.1.0
               </p>
             </div>
           </div>
