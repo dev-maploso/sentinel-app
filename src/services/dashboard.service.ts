@@ -1,7 +1,7 @@
 import api from "@/lib/api";
 
 export interface StatItem {
-  id: number;
+  id: number | null;
   label: string;
   total: number;
 }
