@@ -67,9 +67,7 @@ export default function DashboardMahasantriDetailPage() {
           </div>
 
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-zinc-900">
-              {data.name}
-            </h1>
+            <h1 className="text-xl font-bold text-zinc-900">{data.name}</h1>
 
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
@@ -78,6 +76,17 @@ export default function DashboardMahasantriDetailPage() {
 
               <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600">
                 Detail Mahasantri
+              </span>
+
+              {/* STATUS AKTIF / NONAKTIF */}
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  Number(data.is_active) === 1
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {Number(data.is_active) === 1 ? "Aktif" : "Nonaktif"}
               </span>
             </div>
           </div>
@@ -95,16 +104,13 @@ export default function DashboardMahasantriDetailPage() {
           <div className="space-y-4 text-sm">
             <div>
               <p className="text-zinc-500">Nama</p>
-              <p className="font-semibold text-zinc-900">
-                {data.name}
-              </p>
+              <p className="font-semibold text-zinc-900">{data.name}</p>
             </div>
 
             <div>
               <p className="text-zinc-500">Tempat / Tanggal Lahir</p>
               <p className="font-medium">
-                {data.tempat_lahir || "-"} /{" "}
-                {data.tanggal_lahir || "-"}
+                {data.tempat_lahir || "-"} / {data.tanggal_lahir || "-"}
               </p>
             </div>
           </div>
@@ -119,23 +125,17 @@ export default function DashboardMahasantriDetailPage() {
           <div className="space-y-4 text-sm">
             <div>
               <p className="text-zinc-500">Pondok</p>
-              <p className="font-medium">
-                {data.pondok?.nama_pondok || "-"}
-              </p>
+              <p className="font-medium">{data.pondok?.nama_pondok || "-"}</p>
             </div>
 
             <div>
               <p className="text-zinc-500">Komplek</p>
-              <p className="font-medium">
-                {data.komplek?.nama_komplek || "-"}
-              </p>
+              <p className="font-medium">{data.komplek?.nama_komplek || "-"}</p>
             </div>
 
             <div>
               <p className="text-zinc-500">Kamar</p>
-              <p className="font-medium">
-                {data.kamar?.nama_kamar || "-"}
-              </p>
+              <p className="font-medium">{data.kamar?.nama_kamar || "-"}</p>
             </div>
           </div>
         </div>
@@ -149,23 +149,17 @@ export default function DashboardMahasantriDetailPage() {
           <div className="grid gap-4 text-sm md:grid-cols-3">
             <div>
               <p className="text-zinc-500">Nama Ayah</p>
-              <p className="font-medium">
-                {data.nama_ayah || "-"}
-              </p>
+              <p className="font-medium">{data.nama_ayah || "-"}</p>
             </div>
 
             <div>
               <p className="text-zinc-500">Nama Ibu</p>
-              <p className="font-medium">
-                {data.nama_ibu || "-"}
-              </p>
+              <p className="font-medium">{data.nama_ibu || "-"}</p>
             </div>
 
             <div>
               <p className="text-zinc-500">No WA Orang Tua</p>
-              <p className="font-medium">
-                {data.no_wa_orang_tua || "-"}
-              </p>
+              <p className="font-medium">{data.no_wa_orang_tua || "-"}</p>
             </div>
           </div>
         </div>

@@ -90,6 +90,7 @@ export interface Mahasantri {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
+  is_active?: number | string;
 }
 
 export interface MahasantriResponse {

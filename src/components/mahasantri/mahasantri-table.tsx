@@ -121,6 +121,7 @@ export default function MahasantriTable({
                 <TableHead>NIM</TableHead>
 
                 <TableHead>Nama</TableHead>
+                <TableHead>Status</TableHead>
 
                 <TableHead>Pondok</TableHead>
 
@@ -178,6 +179,18 @@ export default function MahasantriTable({
                     <div className="font-semibold text-zinc-900">
                       {item.name}
                     </div>
+                  </TableCell>
+
+                  <TableCell>
+                    {Number(item.is_active ?? 0) === 1 ? (
+                      <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
+                        Aktif
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                        Non Aktif
+                      </span>
+                    )}
                   </TableCell>
 
                   <TableCell>
