@@ -34,7 +34,7 @@ export default function IzinPulangTable({
     );
   }
 
-  if (!data.length) {
+  if (!data?.length) {
     return (
       <div className="rounded-3xl border bg-white p-12 text-center shadow-sm">
         <p className="text-sm font-semibold text-zinc-900">
@@ -62,7 +62,6 @@ export default function IzinPulangTable({
               <TableHead>Tanggal Selesai</TableHead>
               <TableHead>Tujuan</TableHead>
               <TableHead>Keperluan</TableHead>
-              {/* <TableHead>Status</TableHead> */}
             </TableRow>
           </TableHeader>
 
@@ -71,17 +70,33 @@ export default function IzinPulangTable({
               const today = new Date();
               today.setHours(0, 0, 0, 0);
 
-              const [year, month, day] = item.tanggal_selesai
-                .split("-")
-                .map(Number);
+              let isExpired = false;
 
-              const tanggalSelesai = new Date(year, month - 1, day);
+              if (item?.tanggal_selesai) {
+                const parts = item.tanggal_selesai.split("-");
 
-              const isExpired = tanggalSelesai < today;
+                if (parts.length === 3) {
+                  const [year, month, day] = parts.map(Number);
+
+                  if (
+                    !isNaN(year) &&
+                    !isNaN(month) &&
+                    !isNaN(day)
+                  ) {
+                    const tanggalSelesai = new Date(
+                      year,
+                      month - 1,
+                      day
+                    );
+
+                    isExpired = tanggalSelesai < today;
+                  }
+                }
+              }
 
               return (
                 <TableRow
-                  key={item.id}
+                  key={item?.id ?? index}
                   className={`transition-colors ${
                     isExpired
                       ? "bg-red-50 hover:bg-red-100"
@@ -93,39 +108,43 @@ export default function IzinPulangTable({
                   </TableCell>
 
                   <TableCell className="font-semibold text-zinc-900">
-                    {item.mahasantri.nim}
+                    {item?.mahasantri?.nim ?? "-"}
                   </TableCell>
 
                   <TableCell className="font-medium text-zinc-800">
-                    {item.mahasantri.name}
+                    {item?.mahasantri?.name ?? "-"}
                   </TableCell>
 
                   <TableCell className="text-zinc-600">
-                    {item.kelas?.nama_kelas || "-"}
+                    {item?.kelas?.nama_kelas ?? "-"}
                   </TableCell>
 
                   <TableCell className="text-zinc-600">
-                    {item.jenis_izin_label || item.jenis_izin}
+                    {item?.jenis_izin_label ??
+                      item?.jenis_izin ??
+                      "-"}
                   </TableCell>
 
                   <TableCell className="text-zinc-600">
-                    {item.tanggal_mulai}
+                    {item?.tanggal_mulai ?? "-"}
                   </TableCell>
 
                   <TableCell
-                    className={`${
-                      isExpired ? "font-semibold text-red-700" : "text-zinc-600"
-                    }`}
+                    className={
+                      isExpired
+                        ? "font-semibold text-red-700"
+                        : "text-zinc-600"
+                    }
                   >
-                    {item.tanggal_selesai}
+                    {item?.tanggal_selesai ?? "-"}
                   </TableCell>
 
                   <TableCell className="text-zinc-600">
-                    {item.tujuan || "-"}
+                    {item?.tujuan ?? "-"}
                   </TableCell>
 
                   <TableCell className="text-zinc-600">
-                    {item.keperluan || "-"}
+                    {item?.keperluan ?? "-"}
                   </TableCell>
                 </TableRow>
               );
