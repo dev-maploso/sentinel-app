@@ -11,8 +11,8 @@ export const useAuth = () => {
 
   const fetchUser = async () => {
     try {
-      const res = await authService.getMe();
-      setUser(res.user);
+      const user = await authService.getMe();
+      setUser(user);
     } catch {
       setUser(null);
     } finally {
@@ -21,15 +21,20 @@ export const useAuth = () => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await authService.login(email, password);
-    setToken(res.token);
+    const { token } = await authService.login(email, password);
+
+    setToken(token);
+
     await fetchUser();
   };
 
   const logout = async () => {
-    await authService.logout();
-    removeToken();
-    setUser(null);
+    try {
+      await authService.logout();
+    } finally {
+      removeToken();
+      setUser(null);
+    }
   };
 
   useEffect(() => {
