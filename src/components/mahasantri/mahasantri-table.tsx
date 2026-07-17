@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Mahasantri } from "@/services/mahasantri.service";
+import { Mahasantri } from "@/types/mahasantri";
 
 type ToggleKey =
   | "nama_ayah"

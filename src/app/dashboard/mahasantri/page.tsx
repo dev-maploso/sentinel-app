@@ -7,14 +7,16 @@ import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MahasantriSearch from "@/components/mahasantri/mahasantri-search";
 import MahasantriTable from "@/components/mahasantri/mahasantri-table";
+import MahasantriFilter from "@/components/mahasantri/mahasantri-filter";
 
-import {
+import type {
   Mahasantri,
-  getMahasantriList,
-  searchMahasantri,
-  getAllMahasantri,
-  getTotalMahasantri,
-} from "@/services/mahasantri.service";
+  MahasantriFilterParams,
+  MahasantriFiltersResponse,
+} from "@/types/mahasantri";
+
+import { MahasantriService } from "@/services/mahasantri.service";
+
 import { exportMahasantriToExcel } from "@/lib/export";
 
 export default function MahasantriPage() {
@@ -23,6 +25,7 @@ export default function MahasantriPage() {
   const [data, setData] = useState<Mahasantri[]>([]);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+
   const [totalData, setTotalData] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,60 +34,97 @@ export default function MahasantriPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
-  const loadData = async (page: number, queryValue: string) => {
+  const [filters, setFilters] =
+    useState<MahasantriFiltersResponse | null>(null);
+
+  const [filter, setFilter] =
+    useState<MahasantriFilterParams>({});
+
+  const loadData = async (
+    page: number,
+    keyword: string,
+    filterValue: MahasantriFilterParams
+  ) => {
     try {
       setLoading(true);
 
-      const res = queryValue
-        ? await searchMahasantri(queryValue, page)
-        : await getMahasantriList(page);
+      const response = keyword
+        ? await MahasantriService.search({
+            query: keyword,
+            page,
+            ...filterValue,
+          })
+        : await MahasantriService.list({
+            page,
+            ...filterValue,
+          });
 
-      setData(res.data);
-      setCurrentPage(res.meta.current_page);
-      setLastPage(res.meta.last_page);
+      setData(response.data);
+      setCurrentPage(response.meta.current_page);
+      setLastPage(response.meta.last_page);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load mahasantri:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Fetch total data mahasantri once on mount
-    const fetchTotal = async () => {
+    const loadTotal = async () => {
       try {
-        const total = await getTotalMahasantri();
+        const total = await MahasantriService.total();
         setTotalData(total);
       } catch (error) {
-        console.error('Failed to fetch total:', error);
+        console.error(error);
       }
     };
 
-    fetchTotal();
+    loadTotal();
   }, []);
 
   useEffect(() => {
-    loadData(currentPage, query);
-  }, [currentPage, query]);
+    const loadFilters = async () => {
+      try {
+        const res = await MahasantriService.filters();
+        setFilters(res);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadFilters();
+  }, []);
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      setQuery(searchTerm);
+    loadData(currentPage, query, filter);
+  }, [currentPage, query, filter]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
       setCurrentPage(1);
+      setQuery(searchTerm);
     }, 400);
 
-    return () => clearTimeout(delay);
+    return () => clearTimeout(timeout);
   }, [searchTerm]);
 
   const handleExport = async () => {
     try {
       setExportLoading(true);
-      // Fetch semua data mahasantri
-      const allData = await getAllMahasantri();
-      const timestamp = new Date().toISOString().split('T')[0];
-      exportMahasantriToExcel(allData, undefined, `mahasantri-${timestamp}.xlsx`);
+
+      const allData = await MahasantriService.all();
+
+      const filename = `mahasantri-${
+        new Date().toISOString().split("T")[0]
+      }.xlsx`;
+
+      exportMahasantriToExcel(
+        allData,
+        undefined,
+        filename
+      );
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error(error);
     } finally {
       setExportLoading(false);
     }
@@ -103,9 +143,10 @@ export default function MahasantriPage() {
         </p>
 
         <div className="flex items-center justify-between gap-4 pt-2">
-          <div className="text-sm text-emerald-600 font-medium">
+          <div className="text-sm font-medium text-emerald-600">
             Total data: {totalData}
           </div>
+
           <Button
             onClick={handleExport}
             disabled={exportLoading}
@@ -126,13 +167,20 @@ export default function MahasantriPage() {
         </div>
       </div>
 
-      {/* SEARCH */}
       <MahasantriSearch
         value={searchTerm}
         onChange={setSearchTerm}
       />
 
-      {/* TABLE (NO CARD WRAPPER) */}
+      <MahasantriFilter
+        filters={filters}
+        value={filter}
+        onChange={(value) => {
+          setCurrentPage(1);
+          setFilter(value);
+        }}
+      />
+
       <MahasantriTable
         data={data}
         loading={loading}
@@ -142,7 +190,6 @@ export default function MahasantriPage() {
         }
       />
 
-      {/* PAGINATION */}
       <div className="flex items-center justify-between pt-2">
         <Button
           variant="outline"
