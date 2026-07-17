@@ -13,9 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Mahasantri } from "@/types/mahasantri";
+import type { Mahasantri } from "@/types/mahasantri";
 
 type ToggleKey =
+  | "status"
+  | "pondok"
+  | "komplek"
+  | "kamar"
+  | "status_mahasantri"
   | "nama_ayah"
   | "nama_ibu"
   | "no_wa_orang_tua"
@@ -25,21 +30,88 @@ type ToggleKey =
   | "pekerjaan_ibu"
   | "pekerjaan_wali";
 
-const extraColumns: {
+const columns: {
   key: ToggleKey;
   label: string;
+  defaultVisible: boolean;
 }[] = [
-  { key: "nama_ayah", label: "Nama Ayah" },
-  { key: "nama_ibu", label: "Nama Ibu" },
-  { key: "no_wa_orang_tua", label: "No. WA Orang Tua" },
-  { key: "nama_wali", label: "Nama Wali" },
-  { key: "status_wali", label: "Status Wali" },
-  { key: "pekerjaan_ayah", label: "Pekerjaan Ayah" },
-  { key: "pekerjaan_ibu", label: "Pekerjaan Ibu" },
-  { key: "pekerjaan_wali", label: "Pekerjaan Wali" },
+  {
+    key: "status",
+    label: "Status Aktif",
+    defaultVisible: true,
+  },
+  {
+    key: "status_mahasantri",
+    label: "Status Mahasantri",
+    defaultVisible: true,
+  },
+  {
+    key: "pondok",
+    label: "Pondok",
+    defaultVisible: true,
+  },
+  {
+    key: "komplek",
+    label: "Komplek",
+    defaultVisible: true,
+  },
+  {
+    key: "kamar",
+    label: "Kamar",
+    defaultVisible: true,
+  },
+
+  {
+    key: "nama_ayah",
+    label: "Nama Ayah",
+    defaultVisible: false,
+  },
+  {
+    key: "nama_ibu",
+    label: "Nama Ibu",
+    defaultVisible: false,
+  },
+  {
+    key: "no_wa_orang_tua",
+    label: "No. WA Orang Tua",
+    defaultVisible: false,
+  },
+  {
+    key: "nama_wali",
+    label: "Nama Wali",
+    defaultVisible: false,
+  },
+  {
+    key: "status_wali",
+    label: "Status Wali",
+    defaultVisible: false,
+  },
+  {
+    key: "pekerjaan_ayah",
+    label: "Pekerjaan Ayah",
+    defaultVisible: false,
+  },
+  {
+    key: "pekerjaan_ibu",
+    label: "Pekerjaan Ibu",
+    defaultVisible: false,
+  },
+  {
+    key: "pekerjaan_wali",
+    label: "Pekerjaan Wali",
+    defaultVisible: false,
+  },
 ];
 
-interface MahasantriTableProps {
+const statusColorMap = {
+  success: "bg-emerald-100 text-emerald-700",
+  warning: "bg-amber-100 text-amber-700",
+  primary: "bg-blue-100 text-blue-700",
+  danger: "bg-red-100 text-red-700",
+  info: "bg-sky-100 text-sky-700",
+} as const;
+
+interface Props {
   data: Mahasantri[];
   loading?: boolean;
   onDetail?: (id: number) => void;
@@ -51,15 +123,17 @@ export default function MahasantriTable({
   loading = false,
   onDetail,
   rowNumberStart = 1,
-}: MahasantriTableProps) {
+}: Props) {
   const router = useRouter();
 
-  const [visibleColumns, setVisibleColumns] =
-    useState<Record<ToggleKey, boolean>>(() =>
+  const [visibleColumns, setVisibleColumns] = useState<
+    Record<ToggleKey, boolean>
+  >(
+    () =>
       Object.fromEntries(
-        extraColumns.map((column) => [column.key, false])
-      ) as Record<ToggleKey, boolean>
-    );
+        columns.map((c) => [c.key, c.defaultVisible]),
+      ) as Record<ToggleKey, boolean>,
+  );
 
   const toggleColumn = (key: ToggleKey) => {
     setVisibleColumns((prev) => ({
@@ -73,13 +147,9 @@ export default function MahasantriTable({
       <div className="rounded-3xl border bg-white p-12 text-center shadow-sm">
         <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-emerald-600" />
 
-        <h3 className="font-semibold text-zinc-900">
-          Memuat Data Mahasantri
-        </h3>
+        <h3 className="font-semibold">Memuat Data...</h3>
 
-        <p className="mt-1 text-sm text-zinc-500">
-          Mohon tunggu sebentar...
-        </p>
+        <p className="mt-2 text-sm text-zinc-500">Mohon tunggu sebentar.</p>
       </div>
     );
   }
@@ -91,135 +161,151 @@ export default function MahasantriTable({
           <Users className="h-8 w-8 text-emerald-600" />
         </div>
 
-        <h3 className="font-semibold text-zinc-900">
-          Data Mahasantri Kosong
-        </h3>
+        <h3 className="font-semibold">Data kosong</h3>
 
-        <p className="mt-1 text-sm text-zinc-500">
-          Belum ada data mahasantri yang tersedia.
-        </p>
+        <p className="mt-2 text-sm text-zinc-500">Belum ada data mahasantri.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-5">
-      {/* TABLE */}
       <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-emerald-50">
               <TableRow>
-                <TableHead className="w-24">
-                  Aksi
-                </TableHead>
+                <TableHead>Aksi</TableHead>
 
-                <TableHead className="w-20">
-                  No
-                </TableHead>
+                <TableHead>No</TableHead>
 
                 <TableHead>NIM</TableHead>
 
                 <TableHead>Nama</TableHead>
-                <TableHead>Status</TableHead>
 
-                <TableHead>Pondok</TableHead>
+                {visibleColumns.status && <TableHead>Status</TableHead>}
 
-                <TableHead>Komplek</TableHead>
+                {visibleColumns.status_mahasantri && (
+                  <TableHead>Status Mahasantri</TableHead>
+                )}
 
-                <TableHead>Kamar</TableHead>
+                {visibleColumns.pondok && <TableHead>Pondok</TableHead>}
+
+                {visibleColumns.komplek && <TableHead>Komplek</TableHead>}
+
+                {visibleColumns.kamar && <TableHead>Kamar</TableHead>}
 
                 <TableHead>Tempat Lahir</TableHead>
 
                 <TableHead>Tanggal Lahir</TableHead>
 
-                {extraColumns.map(
-                  (column) =>
-                    visibleColumns[column.key] && (
-                      <TableHead key={column.key}>
-                        {column.label}
-                      </TableHead>
-                    )
-                )}
+                {columns
+                  .filter(
+                    (c) =>
+                      ![
+                        "status",
+                        "status_mahasantri",
+                        "pondok",
+                        "komplek",
+                        "kamar",
+                      ].includes(c.key),
+                  )
+                  .map(
+                    (column) =>
+                      visibleColumns[column.key] && (
+                        <TableHead key={column.key}>{column.label}</TableHead>
+                      ),
+                  )}
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {data.map((item, index) => (
-                <TableRow
-                  key={item.id}
-                  className="transition-colors hover:bg-emerald-50/50"
-                >
-                  {/* ACTION FIRST */}
+                <TableRow key={item.id}>
                   <TableCell>
                     <button
-                      onClick={() => {
-                        if (onDetail) {
-                          return onDetail(item.id);
-                        }
-
-                        router.push(`/mahasantri/${item.id}`);
-                      }}
-                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700"
+                      onClick={() =>
+                        onDetail
+                          ? onDetail(item.id)
+                          : router.push(`/dashboard/mahasantri/${item.id}`)
+                      }
+                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs text-white hover:bg-emerald-700"
                     >
                       <Eye className="h-4 w-4" />
                       Detail
                     </button>
                   </TableCell>
 
-                  <TableCell className="font-medium text-zinc-500">
-                    {rowNumberStart + index}
-                  </TableCell>
+                  <TableCell>{rowNumberStart + index}</TableCell>
 
-                  <TableCell className="font-medium text-zinc-900">
-                    {item.nim}
-                  </TableCell>
+                  <TableCell>{item.nim}</TableCell>
 
-                  <TableCell>
-                    <div className="font-semibold text-zinc-900">
-                      {item.name}
-                    </div>
-                  </TableCell>
+                  <TableCell className="font-medium">{item.name}</TableCell>
 
-                  <TableCell>
-                    {Number(item.is_active ?? 0) === 1 ? (
-                      <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
-                        Aktif
+                  {visibleColumns.status && (
+                    <TableCell>
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-medium ${
+                          item.is_active
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {item.is_active ? "Aktif" : "Nonaktif"}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                        Non Aktif
-                      </span>
-                    )}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.pondok?.nama_pondok || "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.komplek?.nama_komplek || "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.kamar?.nama_kamar || "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.tempat_lahir || "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {item.tanggal_lahir || "-"}
-                  </TableCell>
-
-                  {extraColumns.map((column) =>
-                    visibleColumns[column.key] ? (
-                      <TableCell key={column.key}>
-                        {String(item[column.key] ?? "-")}
-                      </TableCell>
-                    ) : null
+                    </TableCell>
                   )}
+
+                  {visibleColumns.status_mahasantri && (
+                    <TableCell>
+                      {item.status ? (
+                        <span
+                          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                            statusColorMap[item.status.color]
+                          }`}
+                        >
+                          {item.status.label}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                  )}
+
+                  {visibleColumns.pondok && (
+                    <TableCell>{item.pondok?.nama_pondok ?? "-"}</TableCell>
+                  )}
+
+                  {visibleColumns.komplek && (
+                    <TableCell>{item.komplek?.nama_komplek ?? "-"}</TableCell>
+                  )}
+
+                  {visibleColumns.kamar && (
+                    <TableCell>{item.kamar?.nama_kamar ?? "-"}</TableCell>
+                  )}
+
+                  <TableCell>{item.tempat_lahir ?? "-"}</TableCell>
+
+                  <TableCell>{item.tanggal_lahir ?? "-"}</TableCell>
+
+                  {columns
+                    .filter(
+                      (c) =>
+                        ![
+                          "status",
+                          "status_mahasantri",
+                          "pondok",
+                          "komplek",
+                          "kamar",
+                        ].includes(c.key),
+                    )
+                    .map((column) =>
+                      visibleColumns[column.key] ? (
+                        <TableCell key={column.key}>
+                          {String(item[column.key as keyof Mahasantri] ?? "-")}
+                        </TableCell>
+                      ) : null,
+                    )}
                 </TableRow>
               ))}
             </TableBody>
@@ -227,22 +313,19 @@ export default function MahasantriTable({
         </div>
       </div>
 
-      {/* COLUMN TOGGLE (MOVED BELOW TABLE) */}
+      {/* Toggle */}
       <div className="rounded-3xl border bg-white p-6 shadow-sm">
-        <div className="mb-4">
-          <h3 className="font-semibold text-zinc-900">
-            Kolom Tambahan
-          </h3>
-          <p className="text-sm text-zinc-500">
-            Pilih informasi tambahan yang ingin ditampilkan di tabel.
-          </p>
-        </div>
+        <h3 className="mb-1 font-semibold">Kolom yang Ditampilkan</h3>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {extraColumns.map((column) => (
+        <p className="mb-5 text-sm text-zinc-500">
+          Centang kolom yang ingin ditampilkan.
+        </p>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {columns.map((column) => (
             <label
               key={column.key}
-              className="flex cursor-pointer items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 transition hover:border-emerald-300 hover:bg-emerald-50"
+              className="flex cursor-pointer items-center gap-3 rounded-xl border p-3 hover:border-emerald-400 hover:bg-emerald-50"
             >
               <input
                 type="checkbox"
@@ -251,9 +334,7 @@ export default function MahasantriTable({
                 className="h-4 w-4 accent-emerald-600"
               />
 
-              <span className="text-sm font-medium text-zinc-800">
-                {column.label}
-              </span>
+              <span className="text-sm">{column.label}</span>
             </label>
           ))}
         </div>

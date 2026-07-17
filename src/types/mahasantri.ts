@@ -21,6 +21,17 @@ export interface Kamar {
   nama_kamar: string;
 }
 
+export type MahasantriStatusValue =
+  | "masih_pondok"
+  | "boyong"
+  | "lulus";
+
+export interface MahasantriStatus {
+  value: MahasantriStatusValue;
+  label: string;
+  color: "success" | "warning" | "primary";
+}
+
 /* ============================
  * Mahasantri
  * ============================ */
@@ -96,6 +107,7 @@ export interface Mahasantri {
   phone?: string | null;
   gender?: string | null;
   is_active?: boolean;
+  status?: MahasantriStatus | null;
 
   created_at?: string;
   updated_at?: string;
