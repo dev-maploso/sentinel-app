@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import MahasantriSearch from "@/components/mahasantri/mahasantri-search";
 import MahasantriTable from "@/components/mahasantri/mahasantri-table";
 import MahasantriFilter from "@/components/mahasantri/mahasantri-filter";
+import ExportPasswordDialog from "@/components/export-password-dialog";
 
 import type {
   Mahasantri,
@@ -25,6 +26,7 @@ export default function MahasantriPage() {
   const [data, setData] = useState<Mahasantri[]>([]);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const [totalData, setTotalData] = useState(0);
 
@@ -127,6 +129,7 @@ export default function MahasantriPage() {
       console.error(error);
     } finally {
       setExportLoading(false);
+      setPasswordDialogOpen(false);
     }
   };
 
@@ -148,7 +151,7 @@ export default function MahasantriPage() {
           </div>
 
           <Button
-            onClick={handleExport}
+            onClick={() => setPasswordDialogOpen(true)}
             disabled={exportLoading}
             className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
           >
@@ -166,6 +169,15 @@ export default function MahasantriPage() {
           </Button>
         </div>
       </div>
+
+      <ExportPasswordDialog
+        open={passwordDialogOpen}
+        loading={exportLoading}
+        title="Export data mahasantri"
+        expectedPassword="MAPLOSO26"
+        onOpenChange={setPasswordDialogOpen}
+        onConfirm={handleExport}
+      />
 
       <MahasantriSearch
         value={searchTerm}

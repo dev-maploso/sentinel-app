@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import ExportPasswordDialog from "@/components/export-password-dialog";
 import KelasSearch from "@/components/kelas/kelas-search";
 import KelasTable from "@/components/kelas/kelas-table";
 import { ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
@@ -21,6 +22,7 @@ export default function KelasPage() {
   const [data, setData] = useState<RegistrasiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [classes, setClasses] = useState<Kelas[]>([]);
 
@@ -146,17 +148,6 @@ export default function KelasPage() {
   };
 
   const handleExport = async () => {
-    const password = window.prompt("Masukkan password untuk export kelas:");
-
-    if (password === null) {
-      return;
-    }
-
-    if (password !== "MAPLOSO26") {
-      showToast("Password salah.");
-      return;
-    }
-
     try {
       setExportLoading(true);
       const [allRegistrations, allMahasantri] = await Promise.all([
@@ -178,6 +169,7 @@ export default function KelasPage() {
       showToast("Gagal mengekspor data kelas.");
     } finally {
       setExportLoading(false);
+      setPasswordDialogOpen(false);
     }
   };
 
@@ -212,7 +204,7 @@ export default function KelasPage() {
           </p>
 
           <Button
-            onClick={handleExport}
+            onClick={() => setPasswordDialogOpen(true)}
             disabled={exportLoading}
             className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
           >
@@ -230,6 +222,15 @@ export default function KelasPage() {
           </Button>
         </div>
       </div>
+
+      <ExportPasswordDialog
+        open={passwordDialogOpen}
+        loading={exportLoading}
+        title="Export data kelas"
+        expectedPassword="MAPLOSO26"
+        onOpenChange={setPasswordDialogOpen}
+        onConfirm={handleExport}
+      />
 
       <KelasSearch
         value={searchTerm}
