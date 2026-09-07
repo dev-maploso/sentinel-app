@@ -15,6 +15,7 @@ export interface Kelas {
 export interface RegistrasiItem {
   nim: string;
   name: string;
+  nik?: string | null;
   kamar: Kamar | null;
   kelas: Kelas | null;
 }
@@ -40,4 +41,24 @@ export const getKelasRegistrasi = async (
   });
 
   return res.data;
+};
+
+export const getAllKelasRegistrasi = async (): Promise<RegistrasiItem[]> => {
+  const firstPage = await getKelasRegistrasi(1);
+  const items = [...firstPage.data];
+
+  if (firstPage.meta.last_page <= 1) {
+    return items;
+  }
+
+  const pages = await Promise.all(
+    Array.from(
+      { length: firstPage.meta.last_page - 1 },
+      (_, index) => getKelasRegistrasi(index + 2),
+    ),
+  );
+
+  pages.forEach((page) => items.push(...page.data));
+
+  return items;
 };

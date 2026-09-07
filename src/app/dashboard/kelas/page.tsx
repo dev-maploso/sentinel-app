@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import KelasSearch from "@/components/kelas/kelas-search";
 import KelasTable from "@/components/kelas/kelas-table";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
+import { exportKelasToExcel } from "@/lib/export";
 
 import {
+  getAllKelasRegistrasi,
   getKelasRegistrasi,
   Kelas,
   RegistrasiResponse,
@@ -17,6 +19,8 @@ import {
 export default function KelasPage() {
   const [data, setData] = useState<RegistrasiItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [classes, setClasses] = useState<Kelas[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,6 +139,37 @@ export default function KelasPage() {
     }
   }, [currentPage, displayLastPage]);
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    window.setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleExport = async () => {
+    const password = window.prompt("Masukkan password untuk export kelas:");
+
+    if (password === null) {
+      return;
+    }
+
+    if (password !== "MAPLOSO26") {
+      showToast("Password salah.");
+      return;
+    }
+
+    try {
+      setExportLoading(true);
+      const allRegistrations = await getAllKelasRegistrasi();
+      const filename = `kelas-${new Date().toISOString().split("T")[0]}.xlsx`;
+
+      exportKelasToExcel(allRegistrations, filename);
+    } catch (error) {
+      console.error(error);
+      showToast("Gagal mengekspor data kelas.");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   const displayData = useMemo(() => {
     if (!searchTerm.trim()) {
       return data;
@@ -146,14 +181,43 @@ export default function KelasPage() {
 
   return (
     <div className="space-y-6">
+      {toastMessage && (
+        <div
+          role="alert"
+          className="fixed right-6 top-6 z-50 rounded-xl bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-lg"
+        >
+          {toastMessage}
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-zinc-900">
           Data Kelas
         </h1>
-        <p className="text-sm text-zinc-500">
-          Daftar registrasi mahasantri per kelas
-        </p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm text-zinc-500">
+            Daftar registrasi mahasantri per kelas
+          </p>
+
+          <Button
+            onClick={handleExport}
+            disabled={exportLoading}
+            className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+          >
+            {exportLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Mengexport...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export ke Excel
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       <KelasSearch

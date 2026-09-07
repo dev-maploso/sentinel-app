@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 
 import type { Mahasantri } from "@/types/mahasantri";
+import type { RegistrasiItem } from "@/services/kelas.service";
 
 export interface ExportColumn {
   key: keyof Mahasantri;
@@ -222,4 +223,34 @@ export function exportMahasantriWithExtendedColumns(
     columns,
     filename,
   );
+}
+
+export function exportKelasToExcel(
+  data: RegistrasiItem[],
+  filename = "kelas.xlsx",
+): void {
+  try {
+    const excelData: ExcelRow[] = data.map((row) => ({
+      NIM: row.nim,
+      Nama: row.name,
+      Kelas: row.kelas?.nama_kelas ?? "-",
+      NIK: row.nik ?? "-",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    worksheet["!cols"] = [
+      { wch: 18 },
+      { wch: 30 },
+      { wch: 20 },
+      { wch: 20 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Kelas");
+    XLSX.writeFile(workbook, filename);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Gagal mengekspor data kelas ke Excel.");
+  }
 }
