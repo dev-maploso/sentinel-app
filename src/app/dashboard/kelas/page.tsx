@@ -7,6 +7,7 @@ import KelasSearch from "@/components/kelas/kelas-search";
 import KelasTable from "@/components/kelas/kelas-table";
 import { ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
 import { exportKelasToExcel } from "@/lib/export";
+import { MahasantriService } from "@/services/mahasantri.service";
 
 import {
   getAllKelasRegistrasi,
@@ -158,10 +159,20 @@ export default function KelasPage() {
 
     try {
       setExportLoading(true);
-      const allRegistrations = await getAllKelasRegistrasi();
+      const [allRegistrations, allMahasantri] = await Promise.all([
+        getAllKelasRegistrasi(),
+        MahasantriService.all(),
+      ]);
+      const nikByNim = new Map(
+        allMahasantri.map((mahasantri) => [mahasantri.nim, mahasantri.nik]),
+      );
+      const registrationsWithNik = allRegistrations.map((registration) => ({
+        ...registration,
+        nik: nikByNim.get(registration.nim) ?? null,
+      }));
       const filename = `kelas-${new Date().toISOString().split("T")[0]}.xlsx`;
 
-      exportKelasToExcel(allRegistrations, filename);
+      exportKelasToExcel(registrationsWithNik, filename);
     } catch (error) {
       console.error(error);
       showToast("Gagal mengekspor data kelas.");
