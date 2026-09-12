@@ -227,7 +227,7 @@ export default function KelasPage() {
         open={passwordDialogOpen}
         loading={exportLoading}
         title="Export data kelas"
-        expectedPassword="MAPLOSO26"
+        expectedPassword="SENTINEL26"
         onOpenChange={setPasswordDialogOpen}
         onConfirm={handleExport}
       />

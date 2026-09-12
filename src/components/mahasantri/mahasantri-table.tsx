@@ -179,6 +179,8 @@ export default function MahasantriTable({
 
                 <TableHead>No</TableHead>
 
+                <TableHead>Foto</TableHead>
+
                 <TableHead>NIM</TableHead>
 
                 <TableHead>Nama</TableHead>
@@ -237,7 +239,20 @@ export default function MahasantriTable({
                   </TableCell>
 
                   <TableCell>{rowNumberStart + index}</TableCell>
-
+<TableCell>
+  {item.foto ? (
+    <img
+      src={item.foto}
+      alt={`Foto ${item.name}`}
+      className="h-12 w-12 rounded-full object-cover border border-emerald-100"
+      loading="lazy"
+    />
+  ) : (
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">
+      -
+    </div>
+  )}
+</TableCell>
                   <TableCell>{item.nim}</TableCell>
 
                   <TableCell className="font-medium">{item.name}</TableCell>

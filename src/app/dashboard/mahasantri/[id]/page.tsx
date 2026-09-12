@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, User } from "lucide-react";
@@ -51,9 +52,7 @@ export default function DashboardMahasantriDetailPage() {
   if (!data) {
     return (
       <div className="rounded-3xl border bg-white p-10 text-center shadow-sm">
-        <p className="text-zinc-600">
-          Data tidak ditemukan.
-        </p>
+        <p className="text-zinc-600">Data tidak ditemukan.</p>
       </div>
     );
   }
@@ -62,9 +61,7 @@ export default function DashboardMahasantriDetailPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Back */}
       <button
-        onClick={() =>
-          router.push("/dashboard/mahasantri")
-        }
+        onClick={() => router.push("/dashboard/mahasantri")}
         className="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -72,36 +69,47 @@ export default function DashboardMahasantriDetailPage() {
       </button>
 
       {/* Header */}
-      <div className="rounded-3xl border bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50">
-            <User className="h-7 w-7 text-emerald-600" />
+      <div className="rounded-3xl border bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
+          {/* Foto */}
+          <div className="shrink-0">
+            {data.foto ? (
+              <img
+                src={data.foto}
+                alt={`Foto ${data.name}`}
+                className="h-48 w-32 rounded-2xl border-4 border-emerald-50 object-cover shadow-sm sm:h-60 sm:w-40"
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex h-48 w-32 items-center justify-center rounded-2xl bg-emerald-50 sm:h-60 sm:w-40">
+                <User className="h-16 w-16 text-emerald-600" />
+              </div>
+            )}
           </div>
 
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-zinc-900">
+          {/* Informasi */}
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl">
               {data.name}
             </h1>
 
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
                 NIM: {data.nim}
               </span>
 
-              <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600">
+              <span className="rounded-full bg-zinc-100 px-3 py-1.5 text-xs text-zinc-600">
                 Detail Mahasantri
               </span>
 
               <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                className={`rounded-full px-3 py-1.5 text-xs font-medium ${
                   data.is_active
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}
               >
-                {data.is_active
-                  ? "Aktif"
-                  : "Nonaktif"}
+                {data.is_active ? "Aktif" : "Nonaktif"}
               </span>
             </div>
           </div>
@@ -118,44 +126,29 @@ export default function DashboardMahasantriDetailPage() {
 
           <div className="space-y-4 text-sm">
             <div>
-              <p className="text-zinc-500">
-                Nama
-              </p>
+              <p className="text-zinc-500">Nama</p>
 
-              <p className="font-semibold">
-                {data.name}
+              <p className="font-semibold">{data.name}</p>
+            </div>
+
+            <div>
+              <p className="text-zinc-500">NIM</p>
+
+              <p className="font-medium">{data.nim}</p>
+            </div>
+
+            <div>
+              <p className="text-zinc-500">Tempat / Tanggal Lahir</p>
+
+              <p className="font-medium">
+                {data.tempat_lahir || "-"} / {data.tanggal_lahir || "-"}
               </p>
             </div>
 
             <div>
-              <p className="text-zinc-500">
-                NIM
-              </p>
+              <p className="text-zinc-500">Pendidikan Terakhir</p>
 
-              <p className="font-medium">
-                {data.nim}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-zinc-500">
-                Tempat / Tanggal Lahir
-              </p>
-
-              <p className="font-medium">
-                {data.tempat_lahir || "-"} /{" "}
-                {data.tanggal_lahir || "-"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-zinc-500">
-                Pendidikan Terakhir
-              </p>
-
-              <p className="font-medium">
-                {data.pendidikan_terakhir || "-"}
-              </p>
+              <p className="font-medium">{data.pendidikan_terakhir || "-"}</p>
             </div>
           </div>
         </div>
@@ -168,34 +161,21 @@ export default function DashboardMahasantriDetailPage() {
 
           <div className="space-y-4 text-sm">
             <div>
-              <p className="text-zinc-500">
-                Pondok
-              </p>
+              <p className="text-zinc-500">Pondok</p>
 
-              <p className="font-medium">
-                {data.pondok?.nama_pondok ?? "-"}
-              </p>
+              <p className="font-medium">{data.pondok?.nama_pondok ?? "-"}</p>
             </div>
 
             <div>
-              <p className="text-zinc-500">
-                Komplek
-              </p>
+              <p className="text-zinc-500">Komplek</p>
 
-              <p className="font-medium">
-                {data.komplek?.nama_komplek ??
-                  "-"}
-              </p>
+              <p className="font-medium">{data.komplek?.nama_komplek ?? "-"}</p>
             </div>
 
             <div>
-              <p className="text-zinc-500">
-                Kamar
-              </p>
+              <p className="text-zinc-500">Kamar</p>
 
-              <p className="font-medium">
-                {data.kamar?.nama_kamar ?? "-"}
-              </p>
+              <p className="font-medium">{data.kamar?.nama_kamar ?? "-"}</p>
             </div>
           </div>
         </div>
@@ -208,33 +188,21 @@ export default function DashboardMahasantriDetailPage() {
 
           <div className="grid gap-4 text-sm md:grid-cols-3">
             <div>
-              <p className="text-zinc-500">
-                Nama Ayah
-              </p>
+              <p className="text-zinc-500">Nama Ayah</p>
 
-              <p className="font-medium">
-                {data.nama_ayah || "-"}
-              </p>
+              <p className="font-medium">{data.nama_ayah || "-"}</p>
             </div>
 
             <div>
-              <p className="text-zinc-500">
-                Nama Ibu
-              </p>
+              <p className="text-zinc-500">Nama Ibu</p>
 
-              <p className="font-medium">
-                {data.nama_ibu || "-"}
-              </p>
+              <p className="font-medium">{data.nama_ibu || "-"}</p>
             </div>
 
             <div>
-              <p className="text-zinc-500">
-                No. WA Orang Tua
-              </p>
+              <p className="text-zinc-500">No. WA Orang Tua</p>
 
-              <p className="font-medium">
-                {data.no_wa_orang_tua || "-"}
-              </p>
+              <p className="font-medium">{data.no_wa_orang_tua || "-"}</p>
             </div>
           </div>
         </div>

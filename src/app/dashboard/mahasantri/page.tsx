@@ -174,7 +174,7 @@ export default function MahasantriPage() {
         open={passwordDialogOpen}
         loading={exportLoading}
         title="Export data mahasantri"
-        expectedPassword="MAPLOSO26"
+        expectedPassword="SENTINEL26"
         onOpenChange={setPasswordDialogOpen}
         onConfirm={handleExport}
       />

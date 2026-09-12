@@ -41,6 +41,7 @@ export interface Mahasantri {
 
   name: string;
   nim: string;
+  foto:string;
 
   pondok_id: number | null;
   komplek_id: number | null;
